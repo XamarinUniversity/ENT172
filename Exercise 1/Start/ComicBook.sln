@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComicBook", "ComicBook.csproj", "{E26057EC-7AD5-4AD8-8649-FBE60552163D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComicBook", "Common\ComicBook.csproj", "{E26057EC-7AD5-4AD8-8649-FBE60552163D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComicBook.iOS", "iOS\ComicBook.iOS.csproj", "{388CD62E-E226-481D-8EDB-9DA2F626009D}"
 EndProject
