@@ -122,13 +122,13 @@
     <Compile Include="Auth.cs" />
     <Compile Include="OAuthPlatformPresenter.iOS.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\Common\ComicBook.csproj">
-      <Project>{E26057EC-7AD5-4AD8-8649-FBE60552163D}</Project>
+      <Project>{e26057ec-7ad5-4ad8-8649-fbe60552163d}</Project>
       <Name>ComicBook</Name>
     </ProjectReference>
   </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
