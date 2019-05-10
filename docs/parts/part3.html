@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+    <title>Access data on an OAuth 2.0 protected service</title>
+    <link rel="stylesheet" type="text/css" href="./res/styles/normalize.css">
+    <link rel="stylesheet" type="text/css" href="./res/styles/prettify.css" />
+    <link rel="stylesheet" type="text/css" href="./res/styles/styles.css">
+</head>
+
+<body>
+    <!-- Use the same title as the StartHere -->
+    <header>Accessing OAuth 2.0 Web Services with Xamarin.Auth</header>
+
+    <section id="main">
+
+        <h1 id="page-title"></h1>
+
+        <h2>Duration</h2>
+        <p>15 minutes</p>
+
+        <h2>Goals</h2>
+
+        <p>
+            The primary goal of this lab is to retrieve data stored on an OAuth 2.0 protected server after a user has been authenticated.
+            This lab is a continuation of the previous exercise. You can use your existing solution or start from the solution in the
+            <b>Exercise 2</b> <b>Completed</b> folder.
+        </p>
+
+        <p>
+        	You will use Xamarin.Auth's <strong>OAuth2Request</strong> to make two round trips to the ComicBook server.
+        	The first time you will retrieve the user's profile information: name, email address, and a URL for their profile picture.
+        	The second time you will pull down the profile picture as a stream for display in the UI.
+        	In both cases, you will include the Access Token in the request to prove you are authorized to access the user's data.
+        	The image below shows the completed app with the user's name, email address, and picture.
+        </p>
+
+        <img src="res/images/Ex3_complete.png" width="320" alt="" style='border:1px solid #999999'/>
+
+        <h2>Assets</h2>
+        <p>
+            The provided <strong>Exercise 3</strong> folder contains a subfolder named <strong>Completed</strong> with a solution you can use to check your work.
+            Please make sure you have this folder before you begin.
+        </p>
+
+        <h2>Challenge</h2>
+        <p>
+            <ol>
+                <li>
+                	Add the Json.NET NuGet package to each project in the solution.
+                </li>
+
+                <li>
+                	Whenever you successfully get an Account object, enable <b>getProfileButton</b>.
+                </li>
+
+                <li>
+                	Display the profile data: in the Get Profile button's <b>Clicked</b> handler, create an <b>OAuth2Request</b> and use it to retrieve the user's profile data.
+                    It will be returned as a Json string with <b>Name</b>, <b>Email</b>, and <b>ImageUrl</b> values. Display the name and email address using the existing <b>Label</b>s.
+                </li>
+
+                <li>
+                	Display the profile image: create an <b>OAuth2Request</b> using the previously retrieved Image Url.
+                    Read the response as a stream, convert the stream to an <b>ImageSource</b> and assign it to the <strong>Image</strong> control.
+                </li>
+            </ol>
+        </p>
+
+        <!-- Steps -->
+        <h1>Steps</h1>
+
+        <h2>Add the Json.NET component to the platform-specific projects</h2>
+        <ol>
+            <li>Add the <b>Json.NET</b> NuGet package to each project in the solution.</li>
+            <li>We'll be using <b>LINQ to JSON</b> in this exercise. Add the <b>Newtonsoft.Json.Linq</b> using statement to <b>MainPage.xaml.cs</b> in the PCL.</li>
+        </ol>
+
+        <h2>Get Profile Data</h2>
+        <ol>
+            <li>
+                In <b>MainPage.xaml.cs</b>, whenever you get an account object, enable <b>getProfileButton</b> by setting its <code>IsEnabled</code> property to <code>true</code>.
+                This will be done in the constructor and in the <b>OnAuthCompleted</b> method.
+            </li>
+            <li>Add a <b>try/catch</b> block to the <b>GetProfileButtonClicked</b> method. The remaining steps will be completed in the <code>try</code> block.</li>
+            <li>
+                Create an <b>OAuth2Request</b> object:
+                pass <b>"GET"</b> as the <b>method</b> parameter,
+                the Api Endpoint defined in <b>ServerInfo</b> as the <b>url</b> parameter,
+                <code>null</code> for the <b>parameters</b> argument,
+                and the <strong>account</strong> as the final parameter.
+            </li>
+            <li>
+                Call the <b>OAuth2Request</b>'s <b>GetResponseAsync</b> method and save the result in a local variable named <b>response</b>. 
+                Notice this method returns a <code>Task</code>. You need to <code>await</code> this call and add the <code>async</code> keyword before the method signature.
+            </li>
+            <li>
+                Call and await the <b>response</b>'s <b>GetResponseTextAsync</b> method. This is the user's profile data encoded as Json.
+            </li>
+            <li>
+                Use the static <code>JObject.Parse</code> method provided by Json.NET to get a JObject holding the parsed data.
+            </li>
+            <li>
+                Extract the 3 profile data points: "Name", "Email", and "ImageUrl" into local string variables. If you're not familiar with JObject you can reference the code below.
+            </li>
+            <li>
+                Set the <code>Text</code> property of the <b>nameText</b> and <b>emailText</b> <code>Label</code>s to display the profile name and e-mail address.
+            </li>
+            <li>
+                Run the application, authenticate, and then press the <b>Get your profile data</b> button. You should see the profile data.
+            </li>
+            <p><a href="#" onclick="toggleCode(this,'GetProfileButtonClicked');return false;" class="uiitem">Show Code</a>
+<div id="GetProfileButtonClicked" style="display:none;">
+<pre class="prettyprint">
+async void GetProfileButtonClicked (object sender, EventArgs e)
+{
+    try
+    {
+        var request = new OAuth2Request("GET", ServerInfo.ApiEndpoint, null, account);
+        var response = await request.GetResponseAsync();
+
+        var text = await response.GetResponseTextAsync();
+
+        var json = JObject.Parse(text);
+
+        var name     = (string)json["Name"];
+        var email    = (string)json["Email"];
+        var imageUrl = (string)json["ImageUrl"];
+
+        nameText .Text = name;
+        emailText.Text = email;
+
+       statusText.Text = "Get data succeeded";
+    }
+    catch (Exception x)
+    {
+        statusText.Text = "Get data failure: " + x.Message;
+    }
+}
+</pre></div>
+</p>
+        </ol>
+
+        <h2>Display Profile Image</h2>
+        <ol>
+            <li>
+                Still working in the <code>try</code> block in <b>GetProfileButtonClicked</b>, create another <b>OAuth2Request</b> object named <b>imageRequest</b>.
+                The arguments will be similar to the previous <b>OAuth2Request</b>; again this will be a <b>"GET"</b>, however the <b>url</b> parameter will be a new <code>Uri</code> created with the retrieved <code>imageUrl</code> from the previous step.
+            </li>
+
+            <li>
+                Create a <code>stream</code> from the <b>OAuth2Request</b>:
+                first call its <b>GetResponseAsync</b> method, and then call and await <b>GetResponseStreamAsync</b> on the result.
+                Save the stream to a local variable named <b>stream</b>.
+            </li>
+
+            <li>
+                To display the image, we'll update the <b>Source</b> property on <b>profileImage</b>. Call the static <code>ImageSource.FromStream</code> method.
+                Notice that the <b>FromStream</b> method accepts a <code>Func</code>. You can use a lambda that returns <b>stream</b> for this parameter:  
+                "<code>()=> return stream</code>".
+            </li>
+
+            <li>
+            	Run the application again, authenticate, and press the <b>Get your profile data</b> button. You should see the profile data along with the profile image.
+            </li>
+
+            <li>
+            	Close the application and then run it again. Without authenticating, press the <b>Get your profile data</b> button.
+            	You should see the profile data along with the profile image as before - the app is using the persisted Access Token to authorize with the server.
+            </li>
+
+<p><a href="#" onclick="toggleCode(this,'GetProfileButtonClicked2');return false;" class="uiitem">Show Code</a>
+<div id="GetProfileButtonClicked2" style="display:none;">
+<pre class="prettyprint">
+async void GetProfileButtonClicked (object sender, EventArgs e)
+{
+    try
+    {
+        ...
+        var imageUrl = (string)json["ImageUrl"];
+        ...
+
+        var imageRequest = new OAuth2Request("GET", new Uri(imageUrl), null, account);
+		var stream = await (await imageRequest.GetResponseAsync()).GetResponseStreamAsync();
+
+		profileImage.Source = ImageSource.FromStream ( ()=> stream );
+    }
+    catch (Exception x)
+    {
+        statusText.Text = "Get data failure: " + x.Message;
+    }
+}
+</pre></div>
+</p>
+        </ol>
+
+        <h1>Summary</h1>
+        <p>
+            In this exercise, you retrieved text and image user data from an OAuth 2.0 protected server and displayed it in a Xamarin.Forms application.
+        </p>
+        <div class="align-right">
+            <a href="../Start%20Here.html">Go Back</a>
+        </div>
+    </section>
+
+    <script src="./res/js/jquery.min.js"></script>
+    <script src="./res/js/prettify.js"></script>
+    <script src="./res/js/script.js"></script>
+
+    <footer>Copyright (C) 2018 Xamarin Inc., Microsoft.</footer>
+</body>
+</html>

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+    <title>Use a refresh token to retrieve a new access token</title>
+    <link rel="stylesheet" type="text/css" href="./res/styles/normalize.css">
+    <link rel="stylesheet" type="text/css" href="./res/styles/prettify.css" />
+    <link rel="stylesheet" type="text/css" href="./res/styles/styles.css">
+</head>
+
+<body>
+    <!-- Use the same title as the StartHere -->
+    <header>Accessing OAuth 2.0 Web Services with Xamarin.Auth</header>
+
+    <section id="main">
+
+        <h1 id="page-title"></h1>
+
+        <h2>Duration</h2>
+        <p>15 minutes</p>
+
+        <h2>Goals</h2>
+
+        <p>
+            The primary goal of this lab is to retrieve a new Access Token to replace an expired Access Token using the OAuth 2.0 Refresh Flow.
+            This lab is a continuation of the previous exercise. You can use your existing solution or start from the solution in the
+            <b>Exercise 3</b> <b>Completed</b> folder.
+        </p>
+        
+        <p>
+        	Many OAuth 2.0 protected services provide Access Tokens that expire after set amount of time (determined by the service).
+            You will use Xamarin.Auth's <strong>OAuth2Authenticator</strong> to exchange the Refresh Token received during authentication for a new Access Token and a new Refresh Token.
+        </p>
+
+        <div align="center"><img src="res/images/Ex4_complete.png" width="320" alt=""  style='border:1px solid #999999'/></div>
+
+        <h2>Assets</h2>
+        <p>
+            The provided <strong>Exercise 4</strong> folder contains a subfolder named <strong>Completed</strong> with a solution you can use to check your work.
+            Please make sure you have this folder before you begin.
+        </p>
+
+        <h2>Challenge</h2>
+        <p>
+            <ol>
+                <li>
+                    Whenever you successfully get an Account object, enable <b>refreshButton</b>.
+                </li>
+
+                <li>
+                    Whenever you authenticate, check for and display the token lifetime.
+                </li>
+                
+                <li>
+                    In the <b>RefreshButtonClicked</b> method, create a new dictionary of strings that holds the Refresh Token (key "refresh_token"),
+                    the Client Id (key "client_id"), Client Secret (key client_secret), and the string "refresh_token" (key "grant_type"). 
+                </li>
+                
+                <li>
+                    Create a new <b>OAuth2Authenticator</b>. Use the constructor that includes the Client Secret.
+                    Call the authenticator's <b>RequestAccessTokenAsync</b> method, passing in the dictionary.
+                </li>
+                
+                <li>
+                    Check the response for new Access and Refresh Tokens and save them in <b>account</b>.
+                </li>
+            </ol>
+        </p>
+
+        <!-- Steps -->
+        <h1>Steps</h1>
+
+        <h2>Enable the Refresh Tokens button</h2>
+        <ol>
+            <li>
+                In the <b>MainPage</b> constructor, if an account object is loaded from the account store and the account's <code>Properties</code> contains the 
+                key <code>refresh_token</code>, set <b>refreshButton</b>'s <b>IsEnabled</b> property to <code>true</code>.
+            </li>
+            <li>
+                In the the authorization completed handler, if the authentication is successful and the account's <code>Properties</code> contains the 
+                key <code>refresh_token</code>, set <b>refreshButton</b>'s <b>IsEnabled</b> property to <code>true</code>.
+            </li>
+        </ol>
+
+        <h2>Display the Token lifetime</h2>
+        <ol>
+            <li>In the the authorization completed handler, if the authentication is successful, check the <code>Account</code>'s <b>Properties</b> dictionary for the <b>"expires_in"</b> key. If present, read the value from the dictionary and display it using <b>statusText</b>.
+        
+        <p><a href="#" onclick="toggleCode(this,'OnAuthCompleted');return false;" class="uiitem">Show Code</a>
+<div id="OnAuthCompleted" style="display:none;">
+<pre class="prettyprint">
+void OnAuthCompleted (object sender, AuthenticatorCompletedEventArgs e)
+{
+    ...
+    if (e.IsAuthenticated)
+    {
+        ...
+        if (account.Properties.ContainsKey("expires_in"))
+        {
+            var expires = int.Parse (account.Properties ["expires_in"]);
+
+            statusText.Text = "Token expires at: " + expires + "s";
+        }
+
+        if (account.Properties.ContainsKey("refresh_token"))
+            refreshButton.IsEnabled = true;
+    }
+}
+</pre></div>
+</p>
+            </ol>
+
+        <h2>Create the Refresh Query</h2>
+        <p>
+        	The steps required to refresh a token vary by service. We'll create a dictionary of the query values required for our server and use them for the refresh flow.
+        	Please note that the details may change if you are working with a different server in the future.</p>
+        <ol>
+            
+            <li>
+                In the <b>RefreshButtonClicked</b> method, create a local string variable and copy the Refresh Token from the <b>account</b>'s <b>Properties</b>
+                using the key <b>refresh_token</b>.
+            </li>
+            
+            <li>Create a new <code>Dictionary<string, string></code> named <b>queryValues</b>.</li>
+            <li>Add the Refresh Token to <b>queryValues</b> using the key <b>refresh_token</b>.</li>
+            <li>Add the Client Id using the key <b>client_id</b>.</li>
+            <li>Add the grant type: use the key <b>grant_type</b> and the value <b>refresh_token</b>.</li>
+            <li>Add the Client Secret using the key <b>client_secret</b>.</li>
+
+            <p><a href="#" onclick="toggleCode(this,'Dictionary');return false;" class="uiitem">Show Code</a>
+<div id="Dictionary" style="display:none;">
+<pre class="prettyprint">
+void RefreshButtonClicked (object sender, EventArgs e)
+{
+    var refreshToken = account.Properties["refresh_token"];
+    
+    if (string.IsNullOrWhiteSpace(refreshToken))
+        return;
+    
+    var queryValues = new Dictionary&lt;string, string&gt; 
+    {
+        {"refresh_token", refreshToken},
+        {"client_id", ServerInfo.ClientId},
+        {"grant_type", "refresh_token"},
+        {"client_secret", ServerInfo.ClientSecret}
+    };
+}
+</pre></div>
+</p>
+        </ol>
+
+        <h2>Refresh the access token</h2>
+        <ol>
+            <li>
+                In the <b>RefreshButtonClicked</b> method, instantiate a new <b>OAuth2Authenticator</b> and save it to a variable named <b>authenticator</b>.
+             </li>
+            <li>
+                Call <b>authenticator</b>'s <b>RequestAccessTokenAsync</b> method. Pass the <b>queryValues</b> dictionary as the argument.
+                Save the result to a variable named <b>result</b>. 
+                Notice this method returns a <code>Task</code>. You need to <code>await</code> this call and add the <code>async</code> key word before the method signature.
+            </li>
+            
+            <li>
+                The <b>response</b> is a dictionary of strings containing the new Access Token (key "access_token") and a new Refresh Token (key "refresh_token").
+                For each token, check the result for the key and if it exists, update the corresponding token in <b>account</b>.
+            </li>
+            <li>Save the updated <b>Account</b> object to the <code>AccountStore</code>.</li>
+            <li>
+            	The Access Tokens issued by our service expire after 5 minutes. The ideal test here requires several steps:
+
+            		<ol>
+            			<li>Run the application</li>
+            			<li>Authorize using the Authentication Code flow</li>
+            			<li>Get your profile data to verify the authentication succeeded</li>
+            			<li>Wait 5 minutes</li>
+            			<li>Attempt to get the profile data, the call should fail since the Access Token is expired</li>
+            			<li>Click the <b>Refresh Tokens</b> button</li>
+            			<li>Attempt to get the profile data, the call should now succeed since you have a new Access Token</li>
+            		</ol>
+
+            </li>
+<p><a href="#" onclick="toggleCode(this,'RefreshButtonClicked');return false;" class="uiitem">Show Code</a>
+<div id="RefreshButtonClicked" style="display:none;">
+<pre class="prettyprint">
+async void RefreshButtonClicked (object sender, EventArgs e)
+{
+    ...
+    
+    var authenticator = new OAuth2Authenticator
+        (
+            ServerInfo.ClientId,
+            ServerInfo.ClientSecret,
+            "profile",
+            ServerInfo.AuthorizationEndpoint,
+            ServerInfo.RedirectionEndpoint,
+            ServerInfo.TokenEndpoint
+        );
+
+    var result = await authenticator.RequestAccessTokenAsync(queryValues);
+
+    if (result.ContainsKey("access_token"))
+        account.Properties["access_token"] = result["access_token"];
+
+    if (result.ContainsKey("refresh_token"))
+        account.Properties["refresh_token"] = result["refresh_token"];
+
+    store.Save(account, ServiceId);
+}
+</pre></div>
+</p>
+        </ol>
+
+        <h1>Summary</h1>
+        <p>
+            In this exercise, you used a Refresh Token with an OAuth2Authenticator to retrieve a new Access Token from the service.
+        </p>
+        <div class="align-right">
+            <a href="../Start%20Here.html">Go Back</a>
+        </div>
+    </section>
+
+    <script src="./res/js/jquery.min.js"></script>
+    <script src="./res/js/prettify.js"></script>
+    <script src="./res/js/script.js"></script>
+
+    <footer>Copyright (C) 2018 Xamarin Inc., Microsoft.</footer>
+</body>
+</html>
