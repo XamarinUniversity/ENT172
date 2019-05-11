@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+    <title>ENT172 - Accessing OAuth 2.0 Web Services with Xamarin.Auth</title>
+    <link rel="stylesheet" type="text/css" href="./parts/res/styles/normalize.css">
+    <link rel="stylesheet" type="text/css" href="./parts/res/styles/prettify.css">
+    <link rel="stylesheet" type="text/css" href="./parts/res/styles/styles.css">
+</head>
+
+<body>
+    <!-- This will be filled in at runtime -->
+    <header role="course-title"></header>
+
+    <section id="main">
+
+        <h2>Before you begin</h2>
+        <p>
+	        This is a Xamarin.Forms class. To complete the coding exercises, you will need a Xamarin.Forms development environment with either an emulator or a device to run the exercise on. Please see the
+	        <a href="https://university.xamarin.com/resources/setup-and-troubleshooting">setup page</a> if you need help installing the Xamarin development environment.
+        </p>
+
+        <h2>Overview</h2>
+        <p>
+            In this class, you will use the Xamarin.Auth component to access a web service protected by OAuth 2.0. The service is an ASP.NET website using OWIN and Katana - you can create the same basic service with the <a href="http://www.asp.net/aspnet/overview/owin-and-katana/owin-oauth-20-authorization-server">online tutorial</a> if you'd like to control both sides.
+        </p>
+
+        <h2>Objectives</h2>
+        <ol>
+           <li>Authorize with an OAuth 2.0 server</li>
+           <li>Access an OAuth 2.0-secured API</li>
+           <li>Exchange a Refresh Token for a new Access Token</li>
+        </ol>
+
+        <h2>Lecture</h2>
+        <p><a href="./parts/slides.pdf">ENT172 - Accessing OAuth 2.0 Web Services with Xamarin.Auth</a>.</p>
+
+        <h2>Exercises</h2>
+        <p>
+            Exercise materials are available from <a href="https://github.com/XamarinUniversity/ENT172/">GitHub</a>. The code can be cloned through a desktop Git client or <a href="https://github.com/XamarinUniversity/ENT172/archive/master.zip">downloaded directly</a> as a ZIP file.
+        </p>
+        <ol>
+            <li><div class="objective">Create an OAuth2Authenticator</div>
+            <a href="./parts/part1.html">Exercise</a>
+            <br />
+            	In this exercise, we will add the prerequisite components and the core code to authenticate using OAuth 2.0.
+            </li>
+
+            <li><div class="objective">Authenticate with an OAuth 2.0 protected web service</div>
+            <a href="./parts/part2.html">Exercise</a>
+            <br />
+        	    In this exercise, we will authenticate a user against an OAuth 2.0 protected web service.
+            </li>
+
+            <li><div class="objective">Access data on an OAuth 2.0 protected service</div>
+            <a href="./parts/part3.html">Exercise</a>
+            <br />
+    	        In this exercise, we will use an Access Token to retrieve data stored on a protected server.
+            </li>
+
+            <li><div class="objective">Use a Refresh Token to retrieve a new Access Token</div>
+            <a href="./parts/part4.html">Exercise</a>
+            <br />
+	            In this exercise, we will use a Refresh Token to retrieve a new Access Token when the previous Access Token expires.
+            </li>
+        </ol>
+
+        <!-- This section is for additional links and examples that are relevant to 
+            the material in this course -->
+        <h2>Additional resources</h2>
+ 
+        <div class="wslist">
+            <a target="_blank" href="https://components.xamarin.com/view/xamarin.auth">Xamarin.Auth</a>        
+            <a target="_blank" href="http://oauth.net/2/">OAuth 2.0 homepage</a>        
+            <a target="_blank" href="http://docs.mashape.com/auth-settings">mashape Auth Settings</a>
+            <a target="_blank" href="http://www.asp.net/aspnet/overview/owin-and-katana/owin-oauth-20-authorization-server">Using OWIN and Katana to secure ASP.NET web services with OAuth (Tutorial on creating the server)</a>
+        </div>
+
+    </section>
+
+    <script src="./parts/res/js/jquery.min.js"></script>
+    <script src="./parts/res/js/prettify.js"></script>
+    <script src="./parts/res/js/script.js"></script>
+
+    <footer>Copyright (C) 2018 Xamarin Inc., Microsoft.<br><a target="_blank" href="http://university.xamarin.com">Visit Xamarin University for more classes and content</a></footer>
+</body>
+</html>

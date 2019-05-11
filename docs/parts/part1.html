@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+    <title>Create an OAuth2Authenticator</title>
+    <link rel="stylesheet" type="text/css" href="./res/styles/normalize.css">
+    <link rel="stylesheet" type="text/css" href="./res/styles/prettify.css" />
+    <link rel="stylesheet" type="text/css" href="./res/styles/styles.css">
+</head>
+
+<body>
+    <!-- Use the same title as the StartHere -->
+    <header>Accessing OAuth 2.0 Web Services with Xamarin.Auth</header>
+
+    <section id="main">
+
+        <h1 id="page-title"></h1>
+
+        <h2>Duration</h2>
+        <p>15 minutes</p>
+
+        <h2>Goals</h2>
+
+        <p>
+            The primary goal of this lab is to add the prerequisite components and core code to authenticate using OAuth 2.0.
+        </p>
+
+        <p>
+        	You will be working on "ComicBook", a fictitious social network for simians and superheroes.
+			You job is to write an app that lets a user view their profile data stored on the ComicBook server.
+			The user interface for the app is complete and is supplied as starter code. You will add code to
+			perform the authentication and networking needed to access user data.
+        </p>
+
+        <p>
+        	ComicBook's web service stores the name, email address, and profile picture for several pre-existing users.
+        	The service is already complete and is hosted live on the web. The API to access the service is protected by OAuth 2.0.
+        	You will use the Xamarin.Auth component to do two things: first let the user login and then access the user's profile data.
+        </p>
+
+        <p>
+        	The image below shows the completed app (running on Android). Here, the user "Clyde" has authenticated and
+        	your code has already accessed and displayed their name, email address, and profile image.
+        </p>
+
+        <img src="res/images/Ex3_complete.png" width="320" alt=""  style='border:1px solid #999999'/>
+
+        <p>
+        	The following image shows and earlier stage of the app (running on iOS). This is what you will be working on in this first exercise.
+        	You will add code to the click handlers for the Implicit flow button and the Authorization Code flow button
+        	to begin the OAuth authorization process.	
+        </p>
+
+        <img src="res/images/Ex1_complete.png" width="320" alt=""  style='border:1px solid #999999'/>
+
+        <h2>Required assets</h2>
+        <p>
+            The provided <strong>Exercise 1</strong> folder contains a subfolder named <b>Start</b> with a solution you will use
+            to begin this exercise. It also includes a <strong>Completed</strong> folder with a solution you can use to check your work. 
+            Please make sure you have these folders before you begin.
+        </p>
+
+        <h2>Challenge</h2>
+        <p>
+            <ol>
+                <li>Open the provided starter solution and explore the existing code.</li>
+                <li>Add the Xamarin.Auth NuGet package to each project in the solution.</li>
+                <li>Initialize the Xamarin.Auth infrastructure in each of the platform-specific projects.</li>
+                <li>In MainPage.xaml.cs, find the Implicit button's clicked handler, create an OAuth2Authenticator for the Implicit Flow - use the static values in the provided <strong>ServerInfo</strong> class.</li>
+                <li>In the Authorization Code button's clicked handler, create an OAuth2Authenticator for the Authorization Code Flow - use the static values in the provided <strong>ServerInfo</strong> class.</li>
+            </ol>
+        </p>
+
+        <!-- Steps -->
+        <h1>Steps</h1>
+
+        <h2>Add Xamarin.Auth</h2>
+        <ol>
+            <li>Open the project in the <strong>Start</strong> folder.</li>
+            <li>Explore the existing code. This is a single-page Xamarin.Forms application with platform-specific projects for Android and iOS. We'll primarily be working in <b>MainPage.xaml.cs</b> contained in the PCL for this exercise.</li>
+            <li>Add the Xamarin.Auth NuGet package to each project; this includes the PCL and the platform-specific projects.<br>
+            Note: Xamarin.Auth now has a dependency on PCLCrypto. If you experience issues installing Xamarin.Auth on any of the projects, you may need to install PCLCypto first.</li>
+            <li>You can now compile and run the application. Run the ComicBook app on at least one platform. It will show a simple UI but there is currently no behavior for the buttons.</li>
+        </ol>
+
+        <h2>Initialize Xamarin.Auth</h2>
+        <ol>
+            <li>Open <b>AppDelegate.cs</b> in the iOS project.</li>
+            <li>In the <b>FinishedLaunching</b> method, call the static <b>Xamarin.Auth.Auth.Init</b> method.</li>
+<p><a href="#" onclick="toggleCode(this,'FinishedLaunching');return false;" class="uiitem">Show Code</a>
+<div id="FinishedLaunching" style="display:none;">
+<pre class="prettyprint">
+public override bool FinishedLaunching (UIApplication app, NSDictionary options)
+{
+    ...
+    global::Xamarin.Auth.Auth.Init ();
+    ...
+}
+</pre></div>
+</p>  
+            <li>Open <b>MainActivity.cs</b> in the Android project.</li>
+            <li>In the <b>OnCreate</b> method,  call the static <b>Xamarin.Auth.Auth.Init</b> method.</li>
+<p><a href="#" onclick="toggleCode(this,'OnCreate');return false;" class="uiitem">Show Code</a>
+<div id="OnCreate" style="display:none;">
+<pre class="prettyprint">
+protected override void OnCreate (Bundle bundle)
+{
+    ...
+    global::Xamarin.Auth.Auth.Init (this, bundle);
+    ...
+}
+</pre></div>
+        </ol>
+
+        <h2>Create an OAuth2Authenticator</h2>
+        <ol>
+        	<li>
+        		Open <strong>MainPage.xaml.cs</strong> in the PCL.
+        	</li>
+            <li>
+                In the <b>ImplicitButtonClicked</b> method, instantiate an <code>OAuth2Authenticator</code> object for the Implicit flow; 
+                use <code>"profile"</code> for the <b>scope</b> and the <code>public</code> <code>static</code> values in <b>ServerInfo.cs</b> as constructor parameters.
+                We will not make use of the <strong>GetUsernameAsyncFunc</strong> parameter so you can omit it from the constructor call.
+            </li>
+            <li>
+                In the <b>AuthorizationCodeButtonClicked</b> method, instantiate an <code>OAuth2Authenticator</code> object for the Authorization Code flow; 
+                use <code>"profile"</code> for the <b>scope</b> and the <code>public</code> <code>static</code> values in <b>ServerInfo.cs</b> as constructor parameters.
+                We will not make use of the <strong>GetUsernameAsyncFunc</strong> parameter so you can omit it from the constructor call.
+	        </li>
+
+<div class="hintblock">
+<b>Note:</b> One minor thing to know about Xamarin.Auth is that the passed <em>redirectionUrl</em> must end with a terminating slash - otherwise the grant will be refused. In this case, it's the value of the <code>ServerInfo.RedirectionEndpoint</code> static string - it's set to <code>http://localhost/</code> which is fine - just note the terminating slash!
+</div>
+
+            <li>
+            	The completed code is shown below. We'll use both instances in the next exercise.
+            </li>
+
+            <p><a href="#" onclick="toggleCode(this,'ButtonClicked');return false;" class="uiitem">Show Code</a>
+<div id="ButtonClicked" style="display:none;">
+<pre class="prettyprint">
+void ImplicitButtonClicked (object sender, EventArgs e)
+{
+    var authenticator = new OAuth2Authenticator
+        (
+            ServerInfo.ClientId,
+            Scope,
+            ServerInfo.AuthorizationEndpoint,
+            ServerInfo.RedirectionEndpoint
+        );
+}
+
+void AuthorizationCodeButtonClicked (object sender, EventArgs e)
+{
+    var authenticator = new OAuth2Authenticator
+        (
+            ServerInfo.ClientId,
+            ServerInfo.ClientSecret,
+            Scope,
+            ServerInfo.AuthorizationEndpoint,
+            ServerInfo.RedirectionEndpoint,
+            ServerInfo.TokenEndpoint
+        );
+}
+</pre></div>
+</p>  
+        </ol>
+
+        <h1>Summary</h1>
+        <p>
+            In this exercise, you added Xamarin.Auth to the PCL and the platform-specific projects and instantiated
+            OAuth2Authenticator objects for both the Implicit and Authorization Code OAuth flows.
+        </p>
+        <div class="align-right">
+            <a href="../Start%20Here.html">Go Back</a>
+        </div>
+    </section>
+
+    <script src="./res/js/jquery.min.js"></script>
+    <script src="./res/js/prettify.js"></script>
+    <script src="./res/js/script.js"></script>
+
+    <footer>Copyright (C) 2018 Xamarin Inc., Microsoft.</footer>
+</body>
+</html>
